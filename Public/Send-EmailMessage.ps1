@@ -494,7 +494,7 @@
         $Message.Priority = [MimeKit.MessagePriority]::Normal
     }
 
-    [MimeKit.InternetAddress] $SmtpFrom = ConvertTo-MailboxAddress -MailboxAddress $From
+    $SmtpFrom = ConvertTo-MailboxAddress -MailboxAddress $From
     $Message.From.Add($SmtpFrom)
 
     if ($To) {
@@ -533,6 +533,34 @@
         }
     }
     $Message.Body = $BodyBuilder.ToMessageBody()
+
+
+
+
+    $Body = $BodyBuilder.ToMessageBody()
+
+    $Certificate = (Find-UserCertificate)[2]
+    # $Signer = [MimeKit.Cryptography.CmsSigner]::new($Certificate, [MimeKit.Cryptography.SubjectIdentifierType]::Unknown)
+    $Signer = [MimeKit.Cryptography.CmsSigner]::new($Certificate)
+    #$Signer
+    #$Signer = [MimeKit.MailboxAddress]::new("", 'przemyslaw.klys@evotec.pl')
+
+    #$Seucre = [MimeKit.Cryptography.SecureMimeContext]:
+
+    #$TemporarySecureContext = [MimeKit.Cryptography.TemporarySecureMimeContext]::new()
+    #$WindowsSecureMimeContext = [MimeKit.Cryptography.WindowsSecureMimeContext]::new()
+    #$WindowsSecureMimeContext.Import($Signer)
+    #$Message.Body = [MimeKit.Cryptography.ApplicationPkcs7Mime]::Sign($WindowsSecureMimeContext, $Signer, [MimeKit.Cryptography.DigestAlgorithm]::Sha1, $Body)
+    #$Message.Body = [MimeKit.Cryptography.ApplicationPkcs7Mime]::Sign($Signer, [MimeKit.Cryptography.DigestAlgorithm]::Sha1, $Body)
+   # [MimeKit.Cryptography.ApplicationPkcs7Signature]::new
+
+   [MimeKit.Cryptography.MultipartSigned]::new()
+   $Message.Body = $WindowsSecureMimeContext.Sign($Signer, [MimeKit.Cryptography.DigestAlgorithm]::Sha1, $Body)
+
+
+
+
+
 
     ### SMTP Part Below
     $SmtpClient = [MySmtpClient]::new()
